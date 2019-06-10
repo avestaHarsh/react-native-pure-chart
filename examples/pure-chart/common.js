@@ -345,7 +345,7 @@ export const drawXAxisLabels = (sortedData, gap, color = '#000000', showEvenNumb
 						<View key={'label' + i} style={{
 							position: 'absolute',
 							// left: data[0] - gap / 2,
-							left: left < 0 ? -20 : left,
+							left: left < 0 ? -25 : left,
 							width: gap + 15,
 							alignItems: 'center',
 						}}>
