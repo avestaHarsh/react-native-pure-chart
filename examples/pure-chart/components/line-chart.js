@@ -5,7 +5,7 @@ import { initData, drawYAxis, drawGuideLine, drawYAxisLabels, numberWithCommas, 
 class LineChart extends React.Component {
 	constructor(props) {
 		super(props)
-		let newState = initData(this.props.data, this.props.height, this.props.gap, this.props.numberOfYAxisGuideLine)
+		let newState = initData(this.props.data, this.props.height - 30, this.props.gap, this.props.numberOfYAxisGuideLine)
 		this.state = {
 			loading: false,
 			sortedData: newState.sortedData,
@@ -49,11 +49,12 @@ class LineChart extends React.Component {
 		}
 	}
 
-	getTransform(rad, width) {
+	getTransform(rad, width,direction) {
 		let x = (0 - width / 2) * Math.cos(rad) - (0 - width / 2) * Math.sin(rad)
 		let y = (0 - width / 2) * Math.sin(rad) + (0 - width / 2) * Math.cos(rad)
-
-		return [{ translateX: (-1 * x) - width / 2 }, { translateY: (-1 * y) + width / 2 }, { rotate: rad + 'rad' }]
+		let translateX = (-1 * x) - width / 2
+		if(direction === 'lower') translateX = translateX + 1
+		return [{ translateX: translateX }, { translateY: (-1 * y) + width / 2 }, { rotate: rad + 'rad' }]
 	}
 
 	drawCoordinate(index, start, end, backgroundColor, lineStyle, isBlank, lastCoordinate, seriesIndex) {
@@ -65,11 +66,14 @@ class LineChart extends React.Component {
 		let height
 		let top
 		let topMargin = 20
+		let direction
 
 		if (start.ratioY > end.ratioY) {
+			direction = 'lower'
 			height = start.ratioY
 			top = -1 * size
 		} else {
+			direction = 'upper'
 			height = end.ratioY
 			top = -1 * (size - Math.abs(dy))
 		}
@@ -94,7 +98,7 @@ class LineChart extends React.Component {
 						borderColor: isBlank ? backgroundColor : this.props.primaryColor,
 						borderTopWidth: 1,
 						backgroundColor: lastCoordinate ? '#FFFFFF00' : gradientColor,
-						transform: this.getTransform(angleRad, size)
+						transform: this.getTransform(angleRad, size,direction)
 					}, styles.lineBox, lineStyle])} />
 					<View style={StyleSheet.flatten([styles.absolute, {
 						height: height - Math.abs(dy) - 2,
@@ -102,6 +106,14 @@ class LineChart extends React.Component {
 						marginTop: Math.abs(dy) + 2
 					}])} />
 				</View>
+
+				{!lastCoordinate && seriesIndex === 0 ? (
+          null
+          // <View style={StyleSheet.flatten([styles.guideLine, {
+          //   width: dx,
+          //   borderRightColor: this.props.xAxisGridLineColor
+          // }])} />
+        ) : null}
 
 				{seriesIndex === this.state.sortedData.length - 1 && (
 					<TouchableWithoutFeedback onPress={() => {
@@ -300,16 +312,15 @@ class LineChart extends React.Component {
 				}])}>
 					<View style={styles.yAxisLabelsWrapper}>
 						{drawYAxisLabels(this.state.guideArray, this.props.height + 20, this.props.minValue, this.props.labelColor, this.props.yAxisLabelFontSize)}
-
 					</View>
-
-					<View>
-						<ScrollView horizontal>
+					<View style={{flexDirection:'row',justifyContent:'flex-start'}}>
+						<View style={{paddingBottom:50}}>
+						{drawYAxis(this.props.yAxisColor)}
+						</View>
+						<ScrollView horizontal showsHorizontalScrollIndicator={false}>
 							<View>
-
 								<View ref='chartView' style={styles.chartViewWrapper}>
-
-									{drawYAxis(this.props.yAxisColor)}
+								{drawGuideLine(this.state.guideArray, this.props.yAxisGridLineColor)}
 									{this.state.sortedData.map((obj, index) => {
 										return (
 											<Animated.View key={'animated_' + index} style={{
