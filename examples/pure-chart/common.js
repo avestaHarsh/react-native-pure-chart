@@ -117,11 +117,11 @@ export const refineData = (flattenData, max, height, gap) => {
 
 			if (typeof dataProp[i] === 'number') {
 				simpleTypeCount++
-				dataObject.ratioY = dataProp[i] / maxClone * height
+				dataObject.ratioY = dataProp[i] / maxClone * height / 1.2
 				dataObject.y = dataProp[i]
 				dataObject = {
 					gap: i * gap,
-					ratioY: dataProp[i] / maxClone * height,
+					ratioY: dataProp[i] / maxClone * height / 1.2,
 					y: dataProp[i]
 				}
 			} else if (typeof dataProp[i] === 'object') {
@@ -146,7 +146,7 @@ export const refineData = (flattenData, max, height, gap) => {
 					objectTypeCount++
 					dataObject = {
 						gap: i * gap,
-						ratioY: dataProp[i].y / maxClone * height,
+						ratioY: dataProp[i].y / maxClone * height / 1.2,
 						x: dataProp[i].x,
 						y: dataProp[i].y,
 						isEmpty: isEmpty
@@ -218,9 +218,9 @@ export const getGuideArray = (max, height, numberOfPoints = 5) => {
 		x = 10 * x / first
 	}
 
-	for (let i = 1; i < numberOfPoints + 1; i++) {
+	for (let i = 1; i < numberOfPoints + 2; i++) {
 		let v = x / numberOfPoints * i
-		arr.push([v + postfix, v * temp / max * height, 1 * temp / max * height])
+		arr.push([v + postfix, v * temp / max * (height / 1.2), 1 * temp / max * height])
 	}
 
 	return arr
@@ -261,7 +261,7 @@ export const drawYAxisLabels = (arr, height, minValue, color = '#000000', yAxisL
 					<Text style={{ fontSize: 11 }}>0</Text>
 				</View>
 			) : arr.map((v, i) => {
-				/* if (v[1] > height) return null */
+				if (v[1] > height) return null
 				return (
 					<View
 						key={'guide' + i}
