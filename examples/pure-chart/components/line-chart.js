@@ -5,7 +5,7 @@ import { initData, drawYAxis, drawGuideLine, drawYAxisLabels, numberWithCommas, 
 class LineChart extends React.Component {
 	constructor(props) {
 		super(props)
-		let newState = initData(this.props.data, this.props.height - 40, this.props.gap, this.props.numberOfYAxisGuideLine)
+		let newState = initData(this.props.data, this.props.height - 30, this.props.gap, this.props.numberOfYAxisGuideLine)
 		this.state = {
 			loading: false,
 			sortedData: newState.sortedData,
